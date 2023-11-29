@@ -34,6 +34,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -406,8 +407,7 @@ public class UserControllerTest {
         Mockito.when(userService.getUserByEmail(username)).thenReturn(userToDelete);
         Mockito.when(userService.deleteUser(userToDelete.getUserId())).thenReturn(true);
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .delete("/api/users/" + username)
+        RequestBuilder requestBuilder = delete("/api/users/" + username)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -437,8 +437,7 @@ public class UserControllerTest {
         Mockito.when(userService.getUserByEmail(username)).thenReturn(userToDelete);
         Mockito.when(userService.deleteUser(userToDelete.getUserId())).thenReturn(false);
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .delete("/api/users/" + username)
+        RequestBuilder requestBuilder = delete("/api/users/" + username)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -466,8 +465,7 @@ public class UserControllerTest {
         Mockito.when(userService.getUserByEmail(username)).thenReturn(userToDelete);
         Mockito.when(userService.deleteUser(userToDelete.getUserId())).thenThrow(IllegalArgumentException.class);
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .delete("/api/users/" + username)
+        RequestBuilder requestBuilder = delete("/api/users/" + username)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -479,7 +477,7 @@ public class UserControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
-    //This test was written with assistance by OpenAI's GPT-4 model
+    //This test was written with assistance from OpenAI's GPT-4 model
     @Test
     public void testGenerateToken() throws Exception {
         AuthenticationRequest authRequest = new AuthenticationRequest("testuser", "password", "testJwtToken");
@@ -508,7 +506,7 @@ public class UserControllerTest {
         verify(jwtUtil).generateToken(userDetails);
     }
 
-    //This test was written with assistance by OpenAI's GPT-4 model
+    //This test was written with assistance from OpenAI's GPT-4 model
     @Test
     public void testSignupForEvent() throws Exception {
         String username = "testuser";
@@ -537,7 +535,7 @@ public class UserControllerTest {
         verify(eventService).saveEvent(any(Event.class));
     }
 
-    //This test was written with assistance by OpenAI's GPT-4 model
+    //This test was written with assistance from OpenAI's GPT-4 model
     @Test
     public void testSignupForEventBadRequest() throws Exception {
         String username = "testuser";
@@ -564,9 +562,169 @@ public class UserControllerTest {
         verify(eventService, never()).saveEvent(any(Event.class));
     }
 
+    //This test was written with assistance from OpenAI's GPT-4 model
     @Test
-    public void selectedInterestsTest() throws Exception {
+    public void testSelectedInterests() throws Exception {
+        String username = "testuser";
+        String interestName = "Hiking";
 
+        // Mock the necessary objects
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        User mockUser = mock(User.class);
+        Interests mockInterest = mock(Interests.class);
+
+        // Set up the expected behavior of the mocks
+        when(mockUserDetails.getUsername()).thenReturn(username);
+        when(customUserDetailsService.loadUserByUsername(username)).thenReturn(mockUserDetails);
+        when(userService.getUserByEmail(username)).thenReturn(mockUser);
+        when(interestService.getInterestByName(interestName)).thenReturn(mockInterest);
+
+        // Assuming the mockUser has a method to manage interests
+        Set<Interests> interests = new HashSet<>();
+        when(mockUser.getInterests()).thenReturn(interests);
+
+        // Perform the test action
+        mockMvc.perform(post("/api/users/{username}/interests/{interest}", username, interestName))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("has selected interest")));
+
+        // Verify interactions
+        verify(userService).saveUser(any(User.class));
+        verify(interestService).saveInterest(any(Interests.class));
     }
 
+
+    //This test was written with assistance from OpenAI's GPT-4 model
+    @Test
+    public void testUnJoinForEvent() throws Exception {
+        String username = "testuser";
+        Long eventId = 1L;
+
+        // Mock user details and user
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        User mockUser = mock(User.class);
+        Event mockEvent = mock(Event.class);
+
+        // Set up mock behavior
+        when(mockUserDetails.getUsername()).thenReturn(username);
+        when(customUserDetailsService.loadUserByUsername(username)).thenReturn(mockUserDetails);
+        when(userService.getUserByEmail(username)).thenReturn(mockUser);
+        when(eventService.getEvent(eventId)).thenReturn(mockEvent);
+
+        // Assuming the mockUser and mockEvent have methods to manage events and attendees
+        Set<Event> events = new HashSet<>();
+        events.add(mockEvent);
+        when(mockUser.getEvents()).thenReturn(events);
+
+        // Perform the test action
+        mockMvc.perform(delete("/api/users/{username}/events/{eventId}/unjoin", username, eventId))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("left the event")));
+
+        // Verify interactions
+        verify(userService).saveUser(any(User.class));
+        verify(eventService).saveEvent(any(Event.class));
+    }
+
+    //This test was written with assistance from OpenAI's GPT-4 model
+    @Test
+    public void testUnJoinForEventBadRequest() throws Exception {
+        String username = "testuser";
+        Long eventId = 1L;
+
+        // Mock user details, user, and event
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        User mockUser = mock(User.class);
+        Event mockEvent = mock(Event.class);
+
+        // Set up mock behavior
+        when(mockUserDetails.getUsername()).thenReturn(username);
+        when(customUserDetailsService.loadUserByUsername(username)).thenReturn(mockUserDetails);
+        when(userService.getUserByEmail(username)).thenReturn(mockUser);
+        when(eventService.getEvent(eventId)).thenReturn(mockEvent);
+
+        // Assuming the mockUser has methods to manage events
+        Set<Event> events = new HashSet<>();
+        events.add(mockEvent);
+        when(mockUser.getEvents()).thenReturn(events);
+
+        // Simulate an exception during the unjoin process
+        doThrow(new RuntimeException("Failed to unjoin event")).when(userService).saveUser(any(User.class));
+
+        // Perform the test action and expect a BadRequest response
+        mockMvc.perform(delete("/api/users/{username}/events/{eventId}/unjoin", username, eventId))
+                .andExpect(status().isBadRequest());
+
+        // Verify that the saveUser method was called, which caused the exception
+        verify(userService).saveUser(any(User.class));
+
+        verify(eventService, never()).saveEvent(any(Event.class));
+    }
+
+    //This test was written with assistance from OpenAI's GPT-4 model
+    @Test
+    public void testDeleteUserInterest() throws Exception {
+        String username = "testuser";
+        Long interestId = 1L;
+
+        // Mock the necessary objects
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        User mockUser = mock(User.class);
+        Interests mockInterest = mock(Interests.class);
+
+        // Set up the expected behavior of the mocks
+        when(mockUserDetails.getUsername()).thenReturn(username);
+        when(customUserDetailsService.loadUserByUsername(username)).thenReturn(mockUserDetails);
+        when(userService.getUserByEmail(username)).thenReturn(mockUser);
+        when(interestService.getInterest(interestId)).thenReturn(mockInterest);
+
+        // Assuming the mockUser has a method to manage interests
+        Set<Interests> interests = new HashSet<>();
+        interests.add(mockInterest);
+        when(mockUser.getInterests()).thenReturn(interests);
+
+        // Perform the test action
+        mockMvc.perform(delete("/api/users/{username}/interests/{id}", username, interestId))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("has removed interest")));
+
+        // Verify interactions
+        verify(userService).saveUser(any(User.class));
+        verify(interestService).saveInterest(any(Interests.class));
+    }
+
+    //This test was written with assistance from OpenAI's GPT-4 model
+    @Test
+    public void testDeleteUserInterestBadRequest() throws Exception {
+        String username = "testuser";
+        Long interestId = 1L;
+
+        // Mock the necessary objects
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        User mockUser = mock(User.class);
+        Interests mockInterest = mock(Interests.class);
+
+        // Set up the expected behavior of the mocks
+        when(mockUserDetails.getUsername()).thenReturn(username);
+        when(customUserDetailsService.loadUserByUsername(username)).thenReturn(mockUserDetails);
+        when(userService.getUserByEmail(username)).thenReturn(mockUser);
+        when(interestService.getInterest(interestId)).thenReturn(mockInterest);
+
+        // Assuming the mockUser has a method to manage interests
+        Set<Interests> interests = new HashSet<>();
+        interests.add(mockInterest);
+        when(mockUser.getInterests()).thenReturn(interests);
+
+        // Simulate an exception during the interest removal process
+        doThrow(new RuntimeException("Failed to remove user interest")).when(userService).saveUser(any(User.class));
+
+        // Perform the test action and expect a BadRequest response
+        mockMvc.perform(delete("/api/users/{username}/interests/{id}", username, interestId))
+                .andExpect(status().isBadRequest());
+
+        // Verify that the saveUser method was called, which caused the exception
+        verify(userService).saveUser(any(User.class));
+
+        verify(interestService, never()).saveInterest(any(Interests.class));
+    }
 }

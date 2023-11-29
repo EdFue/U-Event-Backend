@@ -3,6 +3,7 @@ package com.cs4360msudenver.ueventspringbootbackend.Interests;
 
 import com.cs4360msudenver.ueventspringbootbackend.User.CustomUserDetailsService;
 import com.cs4360msudenver.ueventspringbootbackend.User.JwtUtil;
+import com.cs4360msudenver.ueventspringbootbackend.User.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +40,9 @@ public class InterestControllerTest {
 
     @MockBean
     private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private UserService userService;
 
     @BeforeEach
     public void setup() {

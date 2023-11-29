@@ -75,7 +75,7 @@ public class InterestServiceTest {
         testInterest.setId(1L);
         testInterest.setInterest("testInterest1");
 
-        Mockito.when(interestRepository.findById(Mockito.any())).thenReturn(Optional.of(testInterest));
+        Mockito.when(interestRepository.findById(Mockito.any())).thenReturn(java.util.Optional.of(testInterest));
         Interests interest = interestService.getInterest(1L);
         assertEquals(1L, interest.getId());
         assertEquals("testInterest1", interest.getInterest());
@@ -163,7 +163,7 @@ public class InterestServiceTest {
         Interests interest = new Interests();
         interest.setInterest("testInterest1");
         interest.setId(1L);
-        Mockito.when(interestRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(interest));
+        Mockito.when(interestRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(interest));
         Mockito.when(interestRepository.existsById(Mockito.any())).thenReturn(true);
 
         assertTrue(interestService.deleteInterest(interest.getId()));
@@ -184,7 +184,7 @@ public class InterestServiceTest {
         interest.setId(1L);
 
         // Mock the interestRepository to throw an exception
-        Mockito.when(interestRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(interest));
+        Mockito.when(interestRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(interest));
         Mockito.when(interestRepository.existsById(Mockito.any())).thenReturn(true);
         Mockito.doThrow(IllegalArgumentException.class).when(interestRepository).deleteById(Mockito.anyLong());
 

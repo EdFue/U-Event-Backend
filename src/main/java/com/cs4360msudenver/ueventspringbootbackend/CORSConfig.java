@@ -1,4 +1,4 @@
-package com.cs4360msudenver.ueventspringbootbackend;//package com.cs4360msudenver.ueventspringbootbackend;
+//package com.cs4360msudenver.ueventspringbootbackend;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
 //import org.springframework.web.cors.CorsConfiguration;

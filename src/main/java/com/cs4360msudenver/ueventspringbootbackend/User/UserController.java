@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -211,7 +213,7 @@ public class UserController {
         return new ResponseEntity<>("User " + user.getUsername() + " signed up for event " + event.getEventName(), HttpStatus.OK);
     }
 
-//    This is method to delete the user from the attendees list
+    //    This is method to delete the user from the attendees list
     @DeleteMapping("/{username}/events/{eventId}/unjoin")
     public ResponseEntity<String> unJoinForEvent(@PathVariable String username, @PathVariable Long eventId) {
         UserDetails checkUser = userDetailsService.loadUserByUsername(username);
@@ -235,11 +237,11 @@ public class UserController {
     }
 
     // Request for managing user's events
-    @PostMapping("/{username}/interests/{interests}")
-    public ResponseEntity<String> selectedInterests(@PathVariable String username, @PathVariable Long interestId) {
+    @PostMapping("/{username}/interests/{interest}")
+    public ResponseEntity<String> selectedInterests(@PathVariable String username, @PathVariable String interest) {
         UserDetails checkUser = userDetailsService.loadUserByUsername(username);
         User user = userService.getUserByEmail(checkUser.getUsername());
-        Interests interests1 = interestService.getInterest(interestId);
+        Interests interests1 = interestService.getInterestByName(interest);
 
         try {
             // append the event id to the user's attending events list
@@ -257,4 +259,25 @@ public class UserController {
         return new ResponseEntity<>("User " + user.getUsername() + " has selected interest: " + interests1.getInterest(), HttpStatus.OK);
     }
 
+    // Delete the interest Id from the user's interest list
+    @DeleteMapping("/{username}/interests/{id}")
+    public ResponseEntity<String> deleteUserInterest(@PathVariable String username, @PathVariable Long id) {
+        UserDetails checkUser = userDetailsService.loadUserByUsername(username);
+        User user = userService.getUserByEmail(checkUser.getUsername());
+        Interests selectedUserInterest = interestService.getInterest(id);
+
+        try {
+            // remove the event id to the user's attending events list
+            user.getInterests().remove(selectedUserInterest);
+            userService.saveUser(user);
+
+            // append the username to the event's attendees list
+            selectedUserInterest.getUsers().remove(username);
+            interestService.saveInterest(selectedUserInterest);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(ExceptionUtils.getStackTrace(e), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("User " + user.getUsername() + " has removed interest: " + selectedUserInterest.getInterest(), HttpStatus.OK);
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -44,6 +45,7 @@ public class InterestService {
     }
 
     // Save interest
+    @Transactional
     public Interests saveInterest(Interests interest) {
         interest = interestRepository.saveAndFlush(interest);
         entityManager.refresh(interest);
@@ -54,15 +56,26 @@ public class InterestService {
     public boolean deleteInterest(Long id) {
 
         try {
-            if(interestRepository.existsById((id))){
+            if (interestRepository.existsById((id))) {
                 interestRepository.deleteById(id);
                 return true;
             }
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return false;
         }
 
         return false;
+    }
+
+
+    // Get interest by username service method
+    public List<Interests> findInterestsByUsers(String username) {
+        try {
+            return interestRepository.findInterestsByUsers(username);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

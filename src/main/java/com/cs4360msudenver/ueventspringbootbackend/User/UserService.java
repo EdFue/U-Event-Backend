@@ -2,6 +2,7 @@ package com.cs4360msudenver.ueventspringbootbackend.User;
 
 import com.cs4360msudenver.ueventspringbootbackend.Event.Event;
 import com.cs4360msudenver.ueventspringbootbackend.Event.EventRepository;
+import com.cs4360msudenver.ueventspringbootbackend.Interests.Interests;
 import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -86,6 +87,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    // Service method to get the list of interests of a user
     // -------------------ADD Attendees---------------------------------------------
 
 }

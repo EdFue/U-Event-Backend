@@ -1,4 +1,4 @@
-package com.cs4360msudenver.ueventspringbootbackend.User;//package com.cs4360msudenver.ueventspringbootbackend.UserModel;
+//package com.cs4360msudenver.ueventspringbootbackend.UserModel;
 //
 //import org.junit.jupiter.api.Test;
 //import static org.junit.jupiter.api.Assertions.assertEquals;

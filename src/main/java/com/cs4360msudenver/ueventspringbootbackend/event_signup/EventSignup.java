@@ -1,4 +1,4 @@
-package com.cs4360msudenver.ueventspringbootbackend.event_signup;//package com.cs4360msudenver.ueventspringbootbackend.event_signup;
+//package com.cs4360msudenver.ueventspringbootbackend.event_signup;
 //
 //import lombok.*;
 //import javax.persistence.*;
